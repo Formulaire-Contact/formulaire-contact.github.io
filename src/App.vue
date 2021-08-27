@@ -11,19 +11,19 @@
     </v-app-bar>
 
     <v-main>
-      <SellerForm/>
+      <Form/>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import SellerForm from "@/components/SellerForm";
+import Form from "@/components/Form";
 
 export default {
   name: 'App',
 
   components: {
-    SellerForm
+    Form
   },
 
   data: () => ({

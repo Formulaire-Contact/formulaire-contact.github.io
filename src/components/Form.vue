@@ -2,7 +2,7 @@
   <v-container>
     <v-container class="col-lg-6">
       <v-row class="d-flex justify-center">
-        <v-progress-linear v-bind:value="25 * (step - 1)" rounded/>
+        <v-progress-linear :value="25 * (step - 1)" rounded/>
         <span class="ma-3 text-h5">{{ currentStepName }}</span>
       </v-row>
       <v-row>
@@ -13,11 +13,11 @@
         <v-container>
           <v-window v-model="step">
             <v-window-item :value="1">
-              <SellerInfoForm v-model="info.customer" v-bind:step="step"/>
+              <CustomerForm v-model="info.customer"/>
             </v-window-item>
 
             <v-window-item :value="2">
-              <BuildingInfoForm v-model="info.building"/>
+              <BuildingForm v-model="info.building" :customerGoal="info.customer.goal"/>
             </v-window-item>
 
             <v-window-item :value="3">
@@ -25,11 +25,11 @@
             </v-window-item>
 
             <v-window-item :value="4">
-              <Summary v-bind:info="info"/>
+              <Summary :info="info"/>
             </v-window-item>
 
             <v-window-item :value="5">
-              <DocumentsAndExport v-bind:info="info"/>
+              <DocumentsAndExport :info="info"/>
             </v-window-item>
           </v-window>
         </v-container>
@@ -44,20 +44,20 @@
 </template>
 
 <script>
-import SellerInfoForm from "@/components/SellerInfoForm";
+import CustomerForm from "@/components/CustomerForm";
 import DocumentsAndExport from "@/components/DocumentsAndExport";
 import Summary from "@/components/Summary";
-import BuildingInfoForm from "@/components/BuildingInfoForm";
+import BuildingForm from "@/components/BuildingForm";
 import ContactForm from "@/components/ContactForm";
 
 export default {
-  name: "SellerForm",
+  name: "Form",
   components: {
     ContactForm,
-    BuildingInfoForm,
+    BuildingForm,
     Summary,
     DocumentsAndExport,
-    SellerInfoForm
+    CustomerForm
   },
   data: () => {
     return {

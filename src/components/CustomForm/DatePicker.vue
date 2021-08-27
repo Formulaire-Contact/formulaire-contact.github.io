@@ -2,9 +2,9 @@
   <v-menu v-on:input="output" ref="menu" v-model="menu" :close-on-content-click="false"
           transition="scale-transition" offset-y min-width="auto">
     <template v-slot:activator="{ on, attrs }">
-      <v-text-field :value="formatDate" label="Date de naissance" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" class="pt-0 mt-0"/>
+      <v-text-field :value="formatDate" :label="label" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" class="pt-0 mt-0"/>
     </template>
-    <v-date-picker id="birthdate" v-model="date" min="1900-01-01" @change="saveDate"
+    <v-date-picker id="date" v-model="date" min="1900-01-01" @change="saveDate"
                    :first-day-of-week="1" locale="fr-fr" :active-picker.sync="activePicker"
                    :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"/>
   </v-menu>
@@ -40,6 +40,7 @@ export default {
       return this.date ? moment(this.date).format("DD/MM/yyyy") : "";
     }
   },
+  props: ['label']
 }
 </script>
 
