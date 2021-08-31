@@ -17,13 +17,13 @@
       </v-radio-group>
 
       <v-fade-transition>
-        <div v-if="building.type === 'house'">
+        <v-container v-if="building.type === 'house'">
           <div>La maison a-t-elle moins de 10 ans ?</div>
           <v-radio-group v-model="building.lessThanTenYears" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
-        </div>
+        </v-container>
       </v-fade-transition>
 
     </v-container>
@@ -48,7 +48,13 @@ export default {
         realEstateAgency: null,
         loan: null,
         mainResidence: null,
-        taxableResidence: null
+        taxableResidence: null,
+        priorStatement: null,
+        arrangeLicence: null,
+        before1949: null,
+        before1997: null,
+        immatriculated10Years: null,
+
       }
     }
   },

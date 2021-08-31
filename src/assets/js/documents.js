@@ -1,14 +1,7 @@
 const customerDocuments = [
     {
-        name: "Carte nationale d'identité ou Passeport",
-        condition: (customer) => { return customer.type === 'person' }
-    },
-    {
-        name: "Carte d'invalidité",
-        condition: (customer) => { return customer.type === 'person' }
-    },
-    {
         name: "Kbis",
+        description: "Moins de 3 mois",
         condition: (customer) => { return customer.type === 'company' }
     },
     {
@@ -61,7 +54,7 @@ const sellerBuildingDocuments = [
         condition: () => { return true }
     },
     {
-        name: "Dernière taxe foncière",
+        name: "Dernière taxe foncière du bien vendu",
         condition: () => { return true }
     },
     {
@@ -107,6 +100,96 @@ const sellerBuildingDocuments = [
                 building.type === 'constructibleLand' ||
                 building.type === 'constructibleLandInSubdivision'
         }
+    },
+    {
+        name: "Déclaration préalable",
+        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.priorStatement }
+    },
+    {
+        name: "Permis d'aménager",
+        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.arrangeLicence }
+    },
+    {
+        name: "DAACT - Déclaration attestant l'achèvement et la conformité des travaux",
+        condition: (building) => {
+            return building.type === 'constructibleLandInSubdivision' ||
+                (building.type === 'house' && building.lessThanTenYears)
+        }
+    },
+    {
+        name: "Règlement de copropriété ou état descriptif de division",
+        description: "Joindre les modificatifs",
+        condition: (building) => { return building.type === 'coownershipLot' }
+    },
+    {
+        name: "Carnet d'entretien du lot de copropriété",
+        condition: (building) => { return building.type === 'coownershipLot' }
+    },
+    {
+        name: "PVs d'assemblées générales des trois dernières années",
+        condition: (building) => { return building.type === 'coownershipLot' }
+    },
+    {
+        name: "Pré état daté",
+        condition: (building) => { return building.type === 'coownershipLot' }
+    },
+    {
+        name: "Diagnostics de la partie privative",
+        condition: (building) => { return building.type === 'coownershipLot' }
+    },
+    {
+        name: "Certificat Loi Carrez",
+        condition: (building) => { return building.type === 'coownershipLot' || building.type === 'commercialBuilding' }
+    },
+    {
+        name: "Diagnostic plomb des parties communes",
+        condition: (building) => { return building.type === 'coownershipLot' && building.before1949 }
+    },
+    {
+        name: "Diagnostic amiante des parties communes",
+        condition: (building) => { return building.type === 'coownershipLot' && building.before1997 }
+    },
+    {
+        name: "Diagnostic technique global",
+        condition: (building) => { return building.type === 'coownershipLot' && building.immatriculated10Years }
+    },
+    {
+        name: "Diagnostic amiante",
+        condition: (building) => { return building.type === 'commercialBuilding' && building.before1997 }
+    },
+    {
+        name: "Diagnostic parasitaire",
+        condition: (building) => { return building.type === 'commercialBuilding' }
+    },
+    {
+        name: "DPE - Diagnostic de performance énergétique",
+        condition: (building) => { return building.type === 'commercialBuilding' }
+    },
+    {
+        name: "ERP - Etats des risques et pollutions",
+        condition: (building) => { return building.type === 'commercialBuilding' }
+    },
+    {
+        name: "Ensemble des diagnostics valides",
+        condition: (building) => { return building.type === 'house' }
+    },
+    {
+        name: "Permis de construire",
+        condition: (building) => { return building.type === 'house' && building.lessThanTenYears }
+    },
+    {
+        name: "Certificat de non opposition de la Mairie",
+        condition: (building) => { return building.type === 'house' && building.lessThanTenYears }
+    },
+    {
+        name: "Assurance dommage ouvrage",
+        description: "Souscrite par le vendeur",
+        condition: (building) => { return building.type === 'house' && building.lessThanTenYears }
+    },
+    {
+        name: "Assurance en responsabilité",
+        description: "Souscrite par le constructeur",
+        condition: (building) => { return building.type === 'house' && building.lessThanTenYears }
     }
 ];
 
@@ -130,12 +213,13 @@ export function getDocuments(info) {
     }
     if (info.customer.goal === 'buy') {
         result.building = buyerBuildingDocuments.filter((document) => {
-            return document.condition(info)
+            return document.condition(info.building)
         });
     } else if (info.customer.goal === 'sell') {
         result.building = sellerBuildingDocuments.filter((document) => {
-            return document.condition(info)
+            return document.condition(info.building)
         });
     }
+    console.log(result);
     return result;
 }

@@ -32,7 +32,7 @@
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </div>
-            <v-combobox label="Titre" v-model="identity.title" outlined :items="titles" :rules="[rules.required]"></v-combobox>
+            <v-combobox label="Titre" v-model="identity.title" outlined :items="titles" :rules="[rules.required]"/>
             <v-text-field id="lastname" v-model="identity.lastname" :rules="[rules.required]" label="Nom" required outlined/>
             <v-text-field id="firstname" v-model="identity.firstname" :rules="[rules.required]" label="Premier prénom" required outlined/>
             <v-text-field id="other-firstnames" v-model="identity.otherFirstnames" :rules="[]" label="Autres prénoms" outlined/>
@@ -42,8 +42,8 @@
             <v-text-field id="address" v-model="identity.address" :rules="[rules.required]" label="Domicile fiscal" required outlined/>
             <div class="v-label">Avez-vous une carte d'invalidité ?</div>
             <v-radio-group v-model="identity.disability" row>
-              <v-radio label="Oui" value="true"/>
-              <v-radio label="Non" value="false"/>
+              <v-radio label="Oui" :value="true"/>
+              <v-radio label="Non" :value="false"/>
             </v-radio-group>
             <div class="v-label">Etes-vous de nationalité française ?</div>
             <v-radio-group v-model="identity.stranger" row>
@@ -78,6 +78,7 @@
             <div v-if="customer.maritalStatus.type === 'married'">
               <DatePicker v-model="customer.maritalStatus.weddingDate" label="Date du mariage"/>
               <v-text-field id="wedding-place" v-model="customer.maritalStatus.weddingPlace" :rules="[rules.required]" label="Lieu du mariage" required outlined/>
+              <v-combobox label="Régime matrimonial" v-model="customer.maritalStatus.weddingType" outlined :items="weddingTypes" :rules="[rules.required]"/>
               <div>Avez-vous signé un contrat de mariage ?</div>
               <v-radio-group v-model="customer.maritalStatus.weddingContract" row>
                 <v-radio label="Oui" :value="true"/>
@@ -141,16 +142,10 @@ export default {
         }
       },
       rules: {
-        age: [
-          val => val < 10 || `I don't believe you!`,
-        ],
-        required: value => !!value || 'Ce champs est requis',
-        email: value => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'E-mail invalide'
-        }
+        required: value => !!value || 'Ce champs est requis'
       },
-      titles: ['Monsieur', 'Madame', 'Mademoiselle']
+      titles: ['Monsieur', 'Madame', 'Mademoiselle'],
+      weddingTypes: ['Séparation de biens', 'Communauté universelle', 'Communauté d\'acquêts']
     }
   },
   methods: {
