@@ -27,8 +27,8 @@ const customerDocuments = [
         condition: (customer) => { return customer.maritalStatus.type === 'divorced' }
     },
     {
-        // TODO: A préciser
-        name: "Renseignement complet d'Etat civil (de l'ex-époux ?)",
+        name: "Renseignement complet d'Etat civil de tous les ex-époux(se)",
+        description: "Nom, prénoms, date et lieu de naissance, date et lieu de mariage, date et lieu de divorce",
         condition: (customer) => { return customer.maritalStatus.type === 'divorced' }
     }
 ];

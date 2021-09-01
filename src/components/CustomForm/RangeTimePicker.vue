@@ -20,9 +20,9 @@ export default {
         start: null,
         end: null
       },
-      startTimes: [9, 10, 11, 14, 15, 16],
+      startTimes: [9, 10, 11, 14, 15, 16, 17],
       morningEndTimes: [10, 11, 12],
-      afternoonEndTimes: [15, 16 , 17],
+      afternoonEndTimes: [15, 16, 17, 18],
       rules: {
         required: value => !!value || 'Ce champs est requis'
       }
