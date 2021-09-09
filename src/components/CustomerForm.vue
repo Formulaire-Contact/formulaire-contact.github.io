@@ -12,7 +12,7 @@
       <v-container v-if="customer.goal !== null">
         <div>Vous êtes ?</div>
         <v-radio-group v-model="customer.type">
-          <v-radio label="Une personne physique" value="person" @click="addIdentity"/>
+          <v-radio label="Une personne physique" value="person" @click="initIdentities"/>
           <v-radio label="Une personne morale" value="company" @click="resetIdentities"/>
         </v-radio-group>
       </v-container>
@@ -137,7 +137,7 @@ export default {
           weddingContract: null,
           weddingContractDate: null,
           weddingContractSollicitor: null,
-          pacsDate: null,
+          pacsDate: '2020-05-12',
           pacsPlace: null
         }
       },
@@ -146,6 +146,14 @@ export default {
       },
       titles: ['Monsieur', 'Madame', 'Mademoiselle'],
       weddingTypes: ['Séparation de biens', 'Communauté universelle', 'Communauté d\'acquêts']
+    }
+  },
+  watch: {
+    customer: {
+      handler: function () {
+        this.saveData();
+      },
+      deep: true
     }
   },
   methods: {
@@ -173,7 +181,27 @@ export default {
     },
     resetIdentities() {
       this.customer.identities = [];
+    },
+    initIdentities() {
+      if (this.customer.identities.length === 0) {
+        this.addIdentity();
+      }
+    },
+    saveData: function() {
+      localStorage.setItem('info.customer', JSON.stringify(this.customer));
+    },
+    loadData: function() {
+      let data = localStorage.getItem('info.customer');
+      if (data !== null) {
+        this.customer = JSON.parse(data);
+      }
+    },
+    updatePacsDate: function(value) {
+      this.customer.maritalStatus.pacsDate = value;
     }
+  },
+  created: function() {
+    this.loadData();
   }
 }
 </script>

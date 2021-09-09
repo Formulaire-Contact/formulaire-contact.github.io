@@ -1,5 +1,5 @@
 <template>
-  <v-text-field id="phone" v-model="formattedPhone" :rules="[rules.phone, rules.required]" label="Téléphone"
+  <v-text-field id="phone" v-model="formattedPhone" :rules="required ? [rules.required, rules.phone] : [rules.phone]" :label="label"
                 required outlined @input="output" @blur="focusOut" @focus="focusIn"/>
 </template>
 
@@ -15,7 +15,7 @@ export default {
       rules: {
         required: value => !!value || 'Ce champs est requis',
         phone: value => {
-          return isPhoneNumberValid(value, 'fr') || 'Téléphone invalide';
+          return (!value || isPhoneNumberValid(value, 'fr')) || 'Téléphone invalide';
         }
       }
     }
@@ -33,7 +33,8 @@ export default {
     output: function() {
       this.$emit('input', this.formattedPhone);
     }
-  }
+  },
+  props: ['label', 'required']
 }
 </script>
 

@@ -67,20 +67,26 @@ export default {
         building: {},
         contact: {},
         documents: []
-      },
+      }
     }
   },
   computed: {
-    currentStepName () {
+    currentStepName() {
       switch (this.step) {
-        case 1: return 'Informations personnelles'
-        case 2: return 'Bien'
-        case 3: return 'Contact'
-        case 4: return 'Récapitulatif'
-        case 5: return 'Documents'
-        default: return ''
+        case 1:
+          return 'Informations personnelles'
+        case 2:
+          return 'Bien'
+        case 3:
+          return 'Contact'
+        case 4:
+          return 'Récapitulatif'
+        case 5:
+          return 'Documents'
+        default:
+          return ''
       }
-    },
+    }
   }
 }
 </script>

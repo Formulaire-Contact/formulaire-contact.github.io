@@ -3,7 +3,8 @@
     <v-container>
       <div class="mb-3">Coordonnées</div>
       <v-text-field id="email" v-model="contact.email" :rules="[rules.email, rules.required]" label="E-mail" required outlined/>
-      <PhoneInput v-model="contact.phone"/>
+      <PhoneInput v-model="contact.phone" label="Téléphone portable" :required="true"/>
+      <PhoneInput v-model="contact.phone" label="Téléphone domicile" :required="false"/>
 
       <div>Pour les rendez-vous de signature, vous souhaitez...</div>
       <v-radio-group v-model="contact.appointment.type">
@@ -70,6 +71,14 @@ export default {
       slotId: 0
     }
   },
+  watch: {
+    contact: {
+      handler: function () {
+        this.saveData();
+      },
+      deep: true
+    }
+  },
   methods: {
     output: function () {
       this.$emit('input', this.contact);
@@ -85,10 +94,28 @@ export default {
     removeSlot(index) {
       this.contact.appointment.slots.splice(index, 1);
     },
+    saveData: function() {
+      localStorage.setItem('info.contact', JSON.stringify(this.contact));
+    },
+    loadData: function() {
+      let data = localStorage.getItem('info.contact');
+      if (data !== null) {
+        this.contact = JSON.parse(data);
+      }
+    }
+  },
+  created: function() {
+    this.loadData();
   }
 }
 </script>
 
 <style scoped>
+.delete-button::before {
+  color: grey
+}
 
+.delete-button:hover {
+  color: red
+}
 </style>

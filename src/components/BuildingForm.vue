@@ -17,13 +17,13 @@
       </v-radio-group>
 
       <v-fade-transition>
-        <v-container v-if="building.type === 'house'">
+        <div v-if="building.type === 'house'">
           <div>La maison a-t-elle moins de 10 ans ?</div>
           <v-radio-group v-model="building.lessThanTenYears" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
-        </v-container>
+        </div>
       </v-fade-transition>
 
     </v-container>
@@ -58,10 +58,30 @@ export default {
       }
     }
   },
+  watch: {
+    building: {
+      handler: function () {
+        this.saveData();
+      },
+      deep: true
+    }
+  },
   methods: {
     output: function () {
       this.$emit('input', this.building);
+    },
+    saveData: function() {
+      localStorage.setItem('info.building', JSON.stringify(this.building));
+    },
+    loadData: function() {
+      let data = localStorage.getItem('info.building');
+      if (data !== null) {
+        this.building = JSON.parse(data);
+      }
     }
+  },
+  created: function() {
+    this.loadData();
   },
   props: ['customerGoal']
 }
