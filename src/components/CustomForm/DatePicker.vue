@@ -4,7 +4,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field :value="formatDate" :label="label" prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on" class="pt-0 mt-0"/>
     </template>
-    <v-date-picker id="date" v-model="value" min="1900-01-01" @change="saveDate"
+    <v-date-picker id="date" v-model="internalValue" min="1900-01-01" @change="saveDate"
                    :first-day-of-week="1" locale="fr-fr" :active-picker.sync="activePicker"
                    :max="(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)"/>
   </v-menu>
@@ -17,18 +17,18 @@ export default {
   name: "DatePicker",
   data: () => {
     return {
-      value: null,
+      internalValue: null,
       activePicker: 'YEAR',
       menu: false,
     }
   },
   methods: {
     output: function () {
-      this.$emit('input', this.value);
+      this.$emit('input', this.internalValue);
     },
     saveDate (date) {
       this.$refs.menu.save(date)
-    },
+    }
   },
   watch: {
     menu (val) {
@@ -37,10 +37,13 @@ export default {
   },
   computed: {
     formatDate() {
-      return this.value ? moment(this.value).format("DD/MM/yyyy") : "";
+      return this.internalValue ? moment(this.internalValue).format("DD/MM/yyyy") : "";
     }
   },
-  props: ['label']
+  props: ['label', 'value'],
+  created() {
+    this.internalValue = this.value;
+  }
 }
 </script>
 
