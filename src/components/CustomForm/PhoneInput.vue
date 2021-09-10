@@ -34,7 +34,11 @@ export default {
       this.$emit('input', this.formattedPhone);
     }
   },
-  props: ['label', 'required']
+  props: ['label', 'required', 'value'],
+  created() {
+    this.formattedPhone = this.value || '';
+    this.focusOut();
+  }
 }
 </script>
 

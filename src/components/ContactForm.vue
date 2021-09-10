@@ -4,7 +4,7 @@
       <div class="mb-3">Coordonnées</div>
       <v-text-field id="email" v-model="contact.email" :rules="[rules.email, rules.required]" label="E-mail" required outlined/>
       <PhoneInput v-model="contact.phone" label="Téléphone portable" :required="true"/>
-      <PhoneInput v-model="contact.phone" label="Téléphone domicile" :required="false"/>
+      <PhoneInput v-model="contact.homePhone" label="Téléphone domicile" :required="false"/>
 
       <div>Pour les rendez-vous de signature, vous souhaitez...</div>
       <v-radio-group v-model="contact.appointment.type">
@@ -55,6 +55,7 @@ export default {
       contact: {
         email: null,
         phone: null,
+        homePhone: null,
         appointment: {
           type: null,
           slots: []

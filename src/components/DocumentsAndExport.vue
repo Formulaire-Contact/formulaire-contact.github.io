@@ -28,7 +28,7 @@
     </div>
 
     <div v-if="documents.building.length > 0">
-      <div class="text-h5 mt-5">Documents pour le bien</div>
+      <div class="text-h5 mt-5">Documents relatifs au bien</div>
       <ul>
         <li v-for="(document) in documents.building" :key="document.name" class="mt-1">
           <span class="ml-2">{{ document.name }}</span><br/>
