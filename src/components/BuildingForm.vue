@@ -1,21 +1,116 @@
 <template>
   <v-form v-on:input="output" class="pa-lg-2 text-h6">
+    <div>Vous {{ customerGoal === 'buy' ? 'achetez' : 'vendez' }}...</div>
+    <v-radio-group v-model="building.type">
+      <v-radio label="Une parcelle de terre" value="land"/>
+      <v-radio label="Un terrain à bâtir" value="constructibleLand"/>
+      <v-radio label="Un terrain à bâtir en lotissement" value="constructibleLandInSubdivision"/>
+      <v-radio label="Un lot de copropriété" value="coownershipLot"/>
+      <v-radio label="Un immeuble à usage commercial" value="commercialBuilding"/>
+      <v-radio label="Une maison individuelle" value="house"/>
+    </v-radio-group>
 
     <div v-if="customerGoal === 'buy'">
+      <v-expand-transition>
+        <div class="mt-10" v-if="building.type !== null">
+          <div class="mb-4 text-h5">Informations sur le bien</div>
+          <v-text-field id="address" v-model="building.address" :rules="[rules.required]" label="Adresse complète du bien" required outlined/>
+          <v-text-field id="price" v-model="building.price" :rules="[rules.required, rules.price]" label="Prix de vente négocié avec le vendeur" type="number" suffix="€" required outlined/>
+
+          <div>Le montant du séquestre (dépôt de garantie) a-t-il été convenu avec {{ buyerSeller }} ?</div>
+          <v-radio-group v-model="building.guaranteeAgreed" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition hide-on-leave>
+            <div v-if="building.guaranteeAgreed">
+              <div>Quel est le montant du séquestre (dépôt de garantie) convenu avec {{ buyerSeller }} ?</div>
+              <v-radio-group v-model="building.guaranteeType">
+                <v-radio label="5% du prix de vente" value="5%"/>
+                <v-radio label="10% du prix de vente" value="10%"/>
+                <v-radio label="Montant précis" value="preciseAmount"/>
+                <v-radio label="Absence de séquestre" value="noGuarantee"/>
+              </v-radio-group>
+              <v-expand-transition>
+                <div v-if="building.guaranteeType === 'preciseAmount'">
+                  <v-text-field id="price" v-model="building.guaranteeAmount" :rules="[rules.required, rules.price]" label="Montant du séquestre" type="number" suffix="€" required outlined/>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-expand-transition>
+
+          <v-expand-transition hide-on-leave>
+            <div v-if="building.guaranteeAgreed === false">
+              <div class="text-subtitle-2 mb-7">Merci de discuter de ce point avec le vendeur et de nous transmettre le souhait des parties.</div>
+            </div>
+          </v-expand-transition>
+
+          <div>L'acquisition est-elle négociée par une agence immobilière ou un mandataire immobilier ?</div>
+          <v-radio-group v-model="building.realEstateAgency" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.realEstateAgency">
+              <div>Les frais d'agence sont à la charge...</div>
+              <v-radio-group v-model="building.realEstateAgencyFees" row>
+                <v-radio label="Du vendeur" value="seller"/>
+                <v-radio label="De l'acquéreur" value="buyer"/>
+              </v-radio-group>
+            </div>
+          </v-expand-transition>
+
+
+          <div class="mt-10 mb-4 text-h5">Financement de l'acquisition</div>
+          <div>L'acquisition est financée à l'aide...</div>
+          <v-radio-group v-model="building.fundingType">
+            <v-radio label="D'un emprunt" value="loan"/>
+            <v-radio label="De deniers personnels" value="ownMoney"/>
+            <v-radio label="D'un emprunt et de deniers personnels" value="loanAndOwnMoney"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.fundingType === 'loan' || building.fundingType === 'loanAndOwnMoney'">
+              <div class="mb-4">Informations sur l'emprunt</div>
+              <v-text-field v-model="building.fundingLoanAmount" :rules="[rules.required, rules.price]" label="Montant emprunté" type="number" suffix="€" required outlined/>
+              <v-text-field v-model="building.fundingLoanRate" :rules="[rules.required, rules.rate]" label="Taux de l'emprunt" type="number" suffix="%" required outlined/>
+              <v-text-field v-model="building.fundingLoanDuration" :rules="[rules.required, rules.duration]" label="Durée de l'emprunt" type="number" suffix="ans" required outlined/>
+            </div>
+          </v-expand-transition>
+
+          <v-expand-transition>
+            <div v-if="building.fundingType === 'ownMoney' || building.fundingType === 'loanAndOwnMoney'">
+              <div class="mb-4">Informations sur les deniers personnels</div>
+              <v-text-field v-model="building.fundingOwnMoneyAmount" :rules="[rules.required, rules.price]" label="Montant des deniers personnels" type="number" suffix="€" required outlined/>
+              <v-text-field v-model="building.fundingOwnMoneyOrigin" :rules="[rules.required]" label="Provenance des fonds" required outlined/>
+            </div>
+          </v-expand-transition>
+
+
+          <div class="d-flex">
+            <div>Une faculté de substitution est-elle à prévoir ?</div>
+            <v-tooltip top open-on-click max-width="300pt">
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="pl-2" color="primary" dark v-bind="attrs" v-on="on">mdi-help-circle-outline</v-icon>
+              </template>
+              <span class="wrap">Clause selon laquelle une personne choisie par l'acquéreur d'un bien peut acheter le logement à sa place en se substituant à lui.</span>
+            </v-tooltip>
+          </div>
+          <v-radio-group v-model="building.substitution" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+        </div>
+      </v-expand-transition>
+
 
     </div>
 
-    <div v-if="customerGoal === 'sell'">
-      <div>Vous vendez...</div>
-      <v-radio-group v-model="building.type">
-        <v-radio label="Une parcelle de terre" value="land"/>
-        <v-radio label="Un terrain à bâtir" value="constructibleLand"/>
-        <v-radio label="Un terrain à bâtir en lotissement" value="constructibleLandInSubdivision"/>
-        <v-radio label="Un lot de copropriété" value="coownershipLot"/>
-        <v-radio label="Un immeuble à usage commercial" value="commercialBuilding"/>
-        <v-radio label="Une maison individuelle" value="house"/>
-      </v-radio-group>
 
+
+    <div v-if="customerGoal === 'sell'">
       <v-expand-transition>
         <div v-if="building.type === 'house'">
           <div>La maison a-t-elle moins de 10 ans ?</div>
@@ -79,7 +174,7 @@
           <div class="mb-4">Quel est votre centre d'imposition ?</div>
           <v-text-field id="taxableResidence" v-model="building.taxableResidence" :rules="[rules.required]" label="Centre d'imposition" required outlined/>
 
-          <div>Le montant du séquestre (dépôt de garantie) a-t-il été convenu avec l’acquéreur ?</div>
+          <div>Le montant du séquestre (dépôt de garantie) a-t-il été convenu avec {{ buyerSeller }} ?</div>
           <v-radio-group v-model="building.guaranteeAgreed" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
@@ -87,7 +182,7 @@
 
           <v-expand-transition hide-on-leave>
             <div v-if="building.guaranteeAgreed">
-              <div>Quel est le montant du séquestre (dépôt de garantie) convenu avec l’acquéreur ?</div>
+              <div>Quel est le montant du séquestre (dépôt de garantie) convenu avec {{ buyerSeller }} ?</div>
               <v-radio-group v-model="building.guaranteeType">
                 <v-radio label="5% du prix de vente" value="5%"/>
                 <v-radio label="10% du prix de vente" value="10%"/>
@@ -315,7 +410,7 @@
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
 
-          <div>Des travaux ont-ils été effectués ?</div>
+          <div>Des travaux ont-ils été effectués sur le bien vendu ?</div>
           <v-radio-group v-model="building.houseWorks" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
@@ -349,10 +444,10 @@
                     </v-btn>
                   </div>
                   <v-row>
-                    <div class="col-9">
+                    <div class="col-md-9 col-sm-8 pr-0">
                       <v-text-field v-model="furniture.name" :rules="[rules.required]" label="Nom" required outlined/>
                     </div>
-                    <div class="col-3">
+                    <div class="col-md-3 col-sm-4">
                       <v-text-field v-model="furniture.price" :rules="[rules.required, rules.price]" label="Prix" type="number" suffix="€" required outlined/>
                     </div>
                   </v-row>
@@ -422,13 +517,30 @@ export default {
         sinister: null,
         soldWithFurnitures: null,
         furnitures: [],
+        fundingType: [],
+        fundingLoanAmount: null,
+        fundingLoanRate: null,
+        fundingLoanDuration: null,
+        fundingOwnMoneyAmount: null,
+        fundingOwnMoneyOrigin: null,
+        substitution: null,
       },
       rules: {
         required: value => !!value || 'Ce champs est requis',
         price: value => parseFloat(value) > 0 || 'Prix de vente invalide',
-        count: value => parseInt(value) > 0 || 'Nombre invalide'
+        count: value => parseInt(value) > 0 || 'Nombre invalide',
+        rate: value => (parseFloat(value) > 0 && parseFloat(value) < 100) || 'Taux invalide',
+        duration: value => parseInt(value) > 0 || 'Durée invalide'
       },
       furnitureId: 0
+    }
+  },
+  computed: {
+    buySell: function() {
+      return this.customerGoal === 'buy' ? 'achetez' : 'vendez';
+    },
+    buyerSeller: function() {
+      return this.customerGoal === 'sell' ? 'l\'acquéreur' : 'le vendeur';
     }
   },
   watch: {

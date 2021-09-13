@@ -46,6 +46,7 @@
       <ul>
         <li>Pour les lotissements, déclaration préalable même si soumis à permis d'aménager ?</li>
         <li>Taxe foncière pour les terrains non bâtis ?</li>
+        <li>Durée de l'emprunt en mois/années ?</li>
       </ul>
     </div>
   </div>

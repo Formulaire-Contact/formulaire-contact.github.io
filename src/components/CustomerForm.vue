@@ -20,7 +20,7 @@
 
     <v-expand-transition hide-on-leave>
       <div v-if="customer.type === 'person'">
-        <div>
+        <div class="mt-10">
           <div class="mb-3 text-h5">Informations personnelles</div>
 
           <v-list v-for="(identity, index) in customer.identities" :key="identity.id" flat>
@@ -63,13 +63,13 @@
 
         </div>
 
-        <div class="mt-3">
+        <div class="mt-12">
           <div class="mb-4 text-h5">Situation conjugale</div>
           <div>Vous êtes...</div>
-          <v-radio-group v-model="customer.maritalStatus.type">
-            <v-radio label="Célibataire" value="single"/>
-            <v-radio label="Marié(e)" value="married"/>
-            <v-radio label="Pacsé(e)" value="pacsed"/>
+          <v-radio-group v-model="customer.maritalStatus.type" class="mb-4">
+            <v-radio label="Célibataire(s)" value="single"/>
+            <v-radio label="Marié(es)" value="married"/>
+            <v-radio label="Pacsé(es)" value="pacsed"/>
             <v-radio label="Divorcé(e)" value="divorced"/>
             <v-radio label="Veuf(ve)" value="widowed"/>
           </v-radio-group>
@@ -79,7 +79,7 @@
               <DatePicker v-model="customer.maritalStatus.weddingDate" label="Date du mariage"/>
               <v-text-field id="wedding-place" v-model="customer.maritalStatus.weddingPlace" :rules="[rules.required]" label="Lieu du mariage" required outlined/>
 
-              <div>Vous êtes marié(s) sour le régime de...</div>
+              <div>Vous êtes mariée(s) sour le régime de...</div>
               <v-radio-group v-model="customer.maritalStatus.weddingType">
                 <v-radio label="La séparation de biens" value="goodSeparation"/>
                 <v-radio label="La communauté universelle" value="universalCommunity"/>
@@ -144,7 +144,7 @@ export default {
           weddingContract: null,
           weddingContractDate: null,
           weddingContractSollicitor: null,
-          pacsDate: '2020-05-12',
+          pacsDate: null,
           pacsPlace: null
         }
       },
