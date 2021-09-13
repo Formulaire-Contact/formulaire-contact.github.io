@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-container class="col-lg-6">
+    <v-container class="col-lg-8 col-xl-5">
       <v-row class="d-flex justify-center">
         <v-progress-linear :value="25 * (step - 1)" rounded/>
         <span class="ma-3 text-h5">{{ currentStepName }}</span>

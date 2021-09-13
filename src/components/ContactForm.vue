@@ -1,6 +1,6 @@
 <template>
-  <v-form v-on:input="output" class="ma-1 text-h6">
-    <v-container>
+  <v-form v-on:input="output" class="pa-lg-2 text-h6">
+    <div>
       <div class="mb-3">Coordonnées</div>
       <v-text-field id="email" v-model="contact.email" :rules="[rules.email, rules.required]" label="E-mail" required outlined/>
       <PhoneInput v-model="contact.phone" label="Téléphone portable" :required="true"/>
@@ -39,7 +39,7 @@
       </v-fade-transition>
 
 
-    </v-container>
+    </div>
   </v-form>
 </template>
 

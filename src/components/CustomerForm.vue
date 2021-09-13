@@ -1,26 +1,26 @@
 <template>
-  <v-form v-on:input="output" class="ma-1 text-h6">
-    <v-container>
+  <v-form v-on:input="output" class="pa-lg-2 text-h6">
+    <div>
       <div>Vous désirez...</div>
       <v-radio-group v-model="customer.goal">
         <v-radio label="Acquérir un bien" value="buy"/>
         <v-radio label="Vendre un bien" value="sell"/>
       </v-radio-group>
-    </v-container>
+    </div>
 
-    <v-fade-transition>
-      <v-container v-if="customer.goal !== null">
+    <v-expand-transition>
+      <div v-if="customer.goal !== null">
         <div>Vous êtes ?</div>
         <v-radio-group v-model="customer.type">
           <v-radio label="Une personne physique" value="person" @click="initIdentities"/>
           <v-radio label="Une personne morale" value="company" @click="resetIdentities"/>
         </v-radio-group>
-      </v-container>
-    </v-fade-transition>
+      </div>
+    </v-expand-transition>
 
-    <v-fade-transition hide-on-leave>
+    <v-expand-transition hide-on-leave>
       <div v-if="customer.type === 'person'">
-        <v-container>
+        <div>
           <div class="mb-3 text-h5">Informations personnelles</div>
 
           <v-list v-for="(identity, index) in customer.identities" :key="identity.id" flat>
@@ -50,20 +50,20 @@
               <v-radio label="Oui" :value="false"/>
               <v-radio label="Non" :value="true"/>
             </v-radio-group>
-            <v-fade-transition>
+            <v-expand-transition>
               <div v-if="identity.stranger">
                 <v-text-field id="nationality" v-model="identity.nationality" :rules="[rules.required]" label="Nationalité" :required="identity.stranger" outlined/>
               </div>
-            </v-fade-transition>
+            </v-expand-transition>
           </v-list>
 
           <v-btn v-if="customer.identities.length < 2" block @click="addIdentity" color="primary">
             <v-icon class="mr-2">mdi-plus</v-icon>Ajouter une personne
           </v-btn>
 
-        </v-container>
+        </div>
 
-        <v-container class="mt-3">
+        <div class="mt-3">
           <div class="mb-4 text-h5">Situation conjugale</div>
           <div>Vous êtes...</div>
           <v-radio-group v-model="customer.maritalStatus.type">
@@ -74,42 +74,49 @@
             <v-radio label="Veuf(ve)" value="widowed"/>
           </v-radio-group>
 
-          <v-fade-transition hide-on-leave>
+          <v-expand-transition hide-on-leave>
             <div v-if="customer.maritalStatus.type === 'married'">
               <DatePicker v-model="customer.maritalStatus.weddingDate" label="Date du mariage"/>
               <v-text-field id="wedding-place" v-model="customer.maritalStatus.weddingPlace" :rules="[rules.required]" label="Lieu du mariage" required outlined/>
-              <v-combobox label="Régime matrimonial" v-model="customer.maritalStatus.weddingType" outlined :items="weddingTypes" :rules="[rules.required]"/>
+
+              <div>Vous êtes marié(s) sour le régime de...</div>
+              <v-radio-group v-model="customer.maritalStatus.weddingType">
+                <v-radio label="La séparation de biens" value="goodSeparation"/>
+                <v-radio label="La communauté universelle" value="universalCommunity"/>
+                <v-radio label="La communauté d'acquêts" value="acquetsCommunity"/>
+              </v-radio-group>
+
               <div>Avez-vous signé un contrat de mariage ?</div>
               <v-radio-group v-model="customer.maritalStatus.weddingContract" row>
                 <v-radio label="Oui" :value="true"/>
                 <v-radio label="Non" :value="false"/>
               </v-radio-group>
 
-              <v-fade-transition>
+              <v-expand-transition>
                 <div v-if="customer.maritalStatus.weddingContract">
                   <DatePicker v-model="customer.maritalStatus.weddingContractDate" label="Date de signature du contrat mariage"/>
                   <v-text-field id="wedding-contract-sollicitor" v-model="customer.maritalStatus.weddingContractSollicitor" :rules="[rules.required]" label="Nom et prénom du notaire" required outlined/>
                 </div>
-              </v-fade-transition>
+              </v-expand-transition>
             </div>
-          </v-fade-transition>
+          </v-expand-transition>
 
-          <v-fade-transition hide-on-leave>
+          <v-expand-transition hide-on-leave>
             <div v-if="customer.maritalStatus.type === 'pacsed'">
               <DatePicker v-model="customer.maritalStatus.pacsDate" label="Date du pacs"/>
               <v-text-field id="pacs-place" v-model="customer.maritalStatus.pacsPlace" :rules="[rules.required]" label="Lieu du pacs" required outlined/>
             </div>
-          </v-fade-transition>
-        </v-container>
+          </v-expand-transition>
+        </div>
       </div>
-    </v-fade-transition>
+    </v-expand-transition>
 
-    <v-fade-transition hide-on-leave>
-      <v-container v-if="customer.type === 'company'">
+    <v-expand-transition hide-on-leave>
+      <div v-if="customer.type === 'company'">
         <div class="mb-3">Informations</div>
         <v-text-field id="company-id" v-model="customer.company.companyId" :rules="[rules.required]" label="Dénomination sociale" required outlined/>
-      </v-container>
-    </v-fade-transition>
+      </div>
+    </v-expand-transition>
 
   </v-form>
 </template>

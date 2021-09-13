@@ -30,6 +30,10 @@ const customerDocuments = [
         name: "Renseignement complet d'Etat civil de tous les ex-époux(se)",
         description: "Nom, prénoms, date et lieu de naissance, date et lieu de mariage, date et lieu de divorce",
         condition: (customer) => { return customer.maritalStatus.type === 'divorced' }
+    },
+    {
+        name: "Copie du RIB",
+        condition: () => { return true }
     }
 ];
 
@@ -58,10 +62,6 @@ const sellerBuildingDocuments = [
         condition: () => { return true }
     },
     {
-        name: "Copie du RIB",
-        condition: () => { return true }
-    },
-    {
         name: "Montant des frais d'agence",
         condition: (building) => { return building.realEstateAgency }
     },
@@ -71,12 +71,12 @@ const sellerBuildingDocuments = [
     },
     {
         name: "Coordonnées de la banque responsable de l'emprunt immobilier",
-        description: "Même si l'emprunt est intégralement remboursé",
+        description: "Même si l'emprunt a été intégralement remboursé",
         condition: (building) => { return building.loan }
     },
     {
         name: "Références de l'emprunt immobilier",
-        description: "Même si l'emprunt est intégralement remboursé",
+        description: "Même si l'emprunt a été intégralement remboursé",
         condition: (building) => { return building.loan }
     },
     {
@@ -132,8 +132,43 @@ const sellerBuildingDocuments = [
         condition: (building) => { return building.type === 'coownershipLot' }
     },
     {
-        name: "Certificat Loi Carrez",
+        name: "Certificat Loi Carrez valide",
+        description: "Durée de validité: illimitée en l’absence de travaux",
         condition: (building) => { return building.type === 'coownershipLot' || building.type === 'commercialBuilding' }
+    },
+    {
+        name: "Diagnostic amiante valide",
+        description: "Durée de validité: illimitée",
+        condition: (building) => { return (building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house') && building.before1997 }
+    },
+    {
+        name: "Diagnostic parasitaire valide",
+        description: "Durée de validité: 3 mois en cas de diagnostic positif, 6 mois en cas de diagnostic négatif",
+        condition: (building) => { return building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house' }
+    },
+    {
+        name: "DPE - Diagnostic de performance énergétique valide",
+        description: "Durée de validité: 10 ans",
+        condition: (building) => { return building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house' }
+    },
+    {
+        name: "ERP - Etats des risques et pollutions",
+        condition: (building) => { return building.type === 'commercialBuilding' }
+    },
+    {
+        name: "Diagnostic plomb valide",
+        description: "Durée de validité: illimitée en cas de diagnostic négatif, 1 an en cas de diagnostic positif",
+        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.before1949 && building.before1997 }
+    },
+    {
+        name: "Diagnostic électricité valide",
+        description: "Durée de validité: 3 ans",
+        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.electricalMoreThan15Years }
+    },
+    {
+        name: "Diagnostic gaz valide",
+        description: "Durée de validité: 3 ans",
+        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.cityGas && building.cityGasMoreThan15Years }
     },
     {
         name: "Diagnostic plomb des parties communes",
@@ -144,42 +179,8 @@ const sellerBuildingDocuments = [
         condition: (building) => { return building.type === 'coownershipLot' && building.before1997 }
     },
     {
-        name: "Diagnostic technique global",
+        name: "Diagnostic technique global des parties communes",
         condition: (building) => { return building.type === 'coownershipLot' && building.immatriculated10Years }
-    },
-    {
-        name: "Diagnostic amiante",
-        description: "Durée de validité: illimitée",
-        condition: (building) => { return (building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house') && building.before1997 }
-    },
-    {
-        name: "Diagnostic parasitaire",
-        description: "Durée de validité: 3 mois en cas de diagnostic positif, 6 mois en cas de diagnostic négatif",
-        condition: (building) => { return building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house' }
-    },
-    {
-        name: "DPE - Diagnostic de performance énergétique",
-        description: "Durée de validité: 10 ans",
-        condition: (building) => { return building.type === 'commercialBuilding' || building.type === 'coownershipLot' || building.type === 'house' }
-    },
-    {
-        name: "ERP - Etats des risques et pollutions",
-        condition: (building) => { return building.type === 'commercialBuilding' }
-    },
-    {
-        name: "Diagnostic plomb",
-        description: "Durée de validité: illimitée en cas de diagnostic négatif, 1 an en cas de diagnostic positif",
-        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.before1949 && building.before1997 }
-    },
-    {
-        name: "Diagnostic électricité",
-        description: "Durée de validité: 3 ans",
-        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.electricalMoreThan15Years }
-    },
-    {
-        name: "Diagnostic gaz",
-        description: "Durée de validité: 3 ans",
-        condition: (building) => { return (building.type === 'coownershipLot' || building.type === 'house') && building.cityGas && building.cityGasMoreThan15Years }
     },
     {
         name: "Permis de construire",

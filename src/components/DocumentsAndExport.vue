@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div class="pa-lg-2">
     <div v-if="documents.identities.length > 1">
       <v-list v-for="(identity) in documents.identities" :key="identity.identity.id" flat>
         <div class="text-h5 mt-5">Documents personnels de {{ identity.identity.firstname }} {{ identity.identity.lastname }}</div>
@@ -38,7 +38,15 @@
     </div>
 
     <v-btn color="primary" class="mt-8" v-on:click="exportPDF">Télécharger PDF</v-btn>
-  </v-container>
+
+    <div class="mt-6">
+      <span>Questions:</span>
+      <ul>
+        <li>Pour les lotissements, déclaration préalable même si soumis à permis d'aménager ?</li>
+        <li>Taxe foncière pour les terrains non bâtis ?</li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <script>

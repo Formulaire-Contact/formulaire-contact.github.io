@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <div class="pa-lg-2">
     {{ info }}
-  </v-container>
+  </div>
 </template>
 
 <script>
