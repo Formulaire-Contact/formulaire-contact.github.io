@@ -37,7 +37,9 @@
       </ul>
     </div>
 
-    <v-btn color="primary" class="mt-8" v-on:click="exportPDF">Télécharger PDF</v-btn>
+    <div class="d-flex justify-center">
+      <v-btn color="primary" class="mt-8" v-on:click="exportPDF">Télécharger PDF</v-btn>
+    </div>
 
     <div class="mt-6">
       <span>Questions:</span>

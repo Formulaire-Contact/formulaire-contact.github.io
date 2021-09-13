@@ -6,7 +6,8 @@
         <span class="ma-3 text-h5">{{ currentStepName }}</span>
       </v-row>
       <v-row>
-        <v-btn :disabled="step === 1" v-if="step > 1" @click="step--">Retour</v-btn>
+        <v-btn :disabled="step === 1" v-if="step > 1" @click="step--;saveStep();">Retour</v-btn>
+        <v-btn @click="resetForm">Réinitialiser</v-btn>
       </v-row>
 
       <v-row>
@@ -37,7 +38,7 @@
 
       <v-row>
         <v-spacer></v-spacer>
-        <v-btn :disabled="step === 5" color="primary" @click="step++">Valider</v-btn>
+        <v-btn :disabled="step === 5" color="primary" @click="step++;saveStep();">Valider</v-btn>
       </v-row>
     </v-container>
   </v-container>
@@ -87,6 +88,18 @@ export default {
           return ''
       }
     }
+  },
+  methods: {
+    resetForm: function() {
+      localStorage.clear();
+      document.location = '';
+    },
+    saveStep: function() {
+      localStorage.setItem('step', this.step + '');
+    }
+  },
+  created() {
+    //this.step = parseInt(localStorage.getItem('step'));
   }
 }
 </script>

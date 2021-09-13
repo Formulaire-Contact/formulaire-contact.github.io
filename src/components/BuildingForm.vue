@@ -129,11 +129,17 @@
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
+
+          <div>Cette vente permet-elle l’acquisition d’un autre bien ?</div>
+          <v-radio-group v-model="building.waterfall" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
         </div>
       </v-expand-transition>
 
       <v-expand-transition>
-        <div class="mt-10" v-if="(building.type === 'house' && building.lessThanTenYears !== null) || building.type === 'coownershipLot'">
+        <div class="mt-10" v-if="building.type === 'house' || building.type === 'coownershipLot'">
           <div class="mb-4 text-h5">Diagnostics</div>
           <div>Le permis de construire du bien a-t-il été délivré avant le 01 Juillet 1997 ?</div>
           <v-radio-group v-model="building.before1997" row>
@@ -185,6 +191,181 @@
         </div>
       </v-expand-transition>
 
+      <v-expand-transition>
+        <div class="mt-10" v-if="building.type === 'house' || building.type === 'coownershipLot'">
+          <div class="mb-4 text-h5">Informations complémentaires</div>
+          <div>Quel est le type d'assainissement du bien ?</div>
+          <v-radio-group v-model="building.sanitation">
+            <v-radio label="Fosse septique" value="septicTank"/>
+            <v-radio label="Tout à l'égoût" value="sewers"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.sanitation === 'sewers'">
+              <div>Un contrôle d’assainissement a-t-il été effectué ?</div>
+              <v-radio-group v-model="building.sanitationControled" row>
+                <v-radio label="Oui" :value="true"/>
+                <v-radio label="Non" :value="false"/>
+              </v-radio-group>
+            </div>
+          </v-expand-transition>
+
+          <div>Le bien possède-t-il une cuve de fioul ?</div>
+          <v-radio-group v-model="building.fuelTank" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.fuelTank">
+              <div>La cuve de fioul est en...</div>
+              <v-radio-group v-model="building.fuelTankMaterial">
+                <v-radio label="Métal" value="steel"/>
+                <v-radio label="PVC" value="plastic"/>
+              </v-radio-group>
+
+              <div>La cuve de fioul est...</div>
+              <v-radio-group v-model="building.fuelTankType">
+                <v-radio label="Enterrée" value="buried"/>
+                <v-radio label="A l'extérieure du bien" value="outdoor"/>
+                <v-radio label="A l'intérieure du bien" value="indoor"/>
+              </v-radio-group>
+
+              <div>Proposez-vous à l'acheteur le rachat du fioul restant ?</div>
+              <v-radio-group v-model="building.fuelTankSellStock" row>
+                <v-radio label="Oui" :value="true"/>
+                <v-radio label="Non" :value="false"/>
+              </v-radio-group>
+
+              <v-expand-transition>
+                <div v-if="building.fuelTankSellStock">
+                  <v-text-field id="fuelPrice" v-model="building.fuelTankSellStockAmount" :rules="[rules.required, rules.price]" label="Montant du rachat de fioul" type="number" suffix="€" required outlined/>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-expand-transition>
+
+          <div>Le bien possède-t-il une citerne de gaz ?</div>
+          <v-radio-group v-model="building.gazTank" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.gazTank">
+              <div>Avez-vous un contrat de location pour la citerne de gaz ?</div>
+              <v-radio-group v-model="building.gazTankRented" row>
+                <v-radio label="Oui" :value="true"/>
+                <v-radio label="Non" :value="false"/>
+              </v-radio-group>
+            </div>
+          </v-expand-transition>
+
+          <div>Le bien possède-t-il une pompe à chaleur ?</div>
+          <v-radio-group v-model="building.heatPump" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Le bien possède-t-il une ou plusieurs cheminée(s) ?</div>
+          <v-radio-group v-model="building.firePlace" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.firePlace">
+              <v-text-field id="firePlaceCount" v-model="building.firePlaceCount" :rules="[rules.required, rules.count]" label="Nombre de cheminée(s)" type="number" min="1" pattern="\d+" required outlined/>
+            </div>
+          </v-expand-transition>
+
+          <div>Le bien possède-t-il un ou plusieurs poêle(s) ?</div>
+          <v-radio-group v-model="building.stove" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.stove">
+              <v-text-field id="stoveCount" v-model="building.stoveCount" :rules="[rules.required, rules.count]" label="Nombre de poêle(s)" type="number" min="1" pattern="\d+" required outlined/>
+            </div>
+          </v-expand-transition>
+
+          <div>Le bien possède-t-il un récupérateur d'eau (dont puits et forages) ?</div>
+          <v-radio-group v-model="building.waterCollector" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Le bien est-il équipé de détecteur(s) de fumée ?</div>
+          <v-radio-group v-model="building.smokeDetectors" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Le bien est-il équipé de WC de type broyeur ?</div>
+          <v-radio-group v-model="building.crusherToilets" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Le bien possède-t-il une piscine ?</div>
+          <v-radio-group v-model="building.swimmingPool" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Des travaux ont-ils été effectués ?</div>
+          <v-radio-group v-model="building.houseWorks" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Un sinistre affecte-t-il ou a-t-il affecté le bien vendu ?</div>
+          <v-radio-group v-model="building.sinister" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <div>Le bien est-il vendu avec du mobilier ?</div>
+          <v-radio-group v-model="building.soldWithFurnitures" row>
+            <v-radio label="Oui" :value="true"/>
+            <v-radio label="Non" :value="false"/>
+          </v-radio-group>
+
+          <v-expand-transition>
+            <div v-if="building.soldWithFurnitures">
+              <div class="mb-3 mt-3">Meubles</div>
+              <div class="text-body-1">Merci d'indiquer la liste précise des meubles vendus avec le bien ainsi que leur valeur.</div>
+
+              <v-container class="col-lg-8 col-md-10 col-sm-12">
+                <v-list v-for="(furniture, index) in building.furnitures" :key="furniture.id" flat class="pb-0">
+                  <v-divider class="mb-2" v-if="index > 0"/>
+                  <div class="d-flex mb-2">
+                    <div>Meuble n°{{ index + 1 }}</div>
+                    <v-spacer/>
+                    <v-btn icon @click="removeFurniture(index)" class="delete-button">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </div>
+                  <v-row>
+                    <div class="col-9">
+                      <v-text-field v-model="furniture.name" :rules="[rules.required]" label="Nom" required outlined/>
+                    </div>
+                    <div class="col-3">
+                      <v-text-field v-model="furniture.price" :rules="[rules.required, rules.price]" label="Prix" type="number" suffix="€" required outlined/>
+                    </div>
+                  </v-row>
+                </v-list>
+              </v-container>
+              <v-btn block @click="addFurniture" color="primary">
+                <v-icon class="mr-2">mdi-plus</v-icon>Ajouter un meuble
+              </v-btn>
+            </div>
+          </v-expand-transition>
+        </div>
+      </v-expand-transition>
+
     </div>
   </v-form>
 </template>
@@ -201,6 +382,7 @@ export default {
         address: null,
         description: null,
         price: null,
+        waterfall: null,
         currentResidents: null,
         guaranteeAgreed: null,
         guaranteeType: null,
@@ -218,11 +400,35 @@ export default {
         electricalMoreThan15Years: null,
         cityGas: null,
         cityGasMoreThan15Years: null,
+        sanitation: null,
+        sanitationControled: null,
+        fuelTank: null,
+        fuelTankMaterial: null,
+        fuelTankType: null,
+        fuelTankSellStock: null,
+        fuelTankSellStockAmount: null,
+        gazTank: null,
+        gazTankRented: null,
+        heatPump: null,
+        firePlace: null,
+        firePlaceCount: null,
+        stove: null,
+        stoveCount: null,
+        waterCollector: null,
+        smokeDetectors: null,
+        crusherToilets: null,
+        swimmingPool: null,
+        houseWorks: null,
+        sinister: null,
+        soldWithFurnitures: null,
+        furnitures: [],
       },
       rules: {
         required: value => !!value || 'Ce champs est requis',
-        price: value => parseFloat(value) > 0 || 'Prix de vente invalide'
-      }
+        price: value => parseFloat(value) > 0 || 'Prix de vente invalide',
+        count: value => parseInt(value) > 0 || 'Nombre invalide'
+      },
+      furnitureId: 0
     }
   },
   watch: {
@@ -245,6 +451,16 @@ export default {
       if (data !== null) {
         this.building = JSON.parse(data);
       }
+    },
+    addFurniture() {
+      this.building.furnitures.push({
+        id: this.furnitureId++,
+        name: null,
+        price: null
+      });
+    },
+    removeFurniture(index) {
+      this.building.furnitures.splice(index, 1);
     }
   },
   created: function() {

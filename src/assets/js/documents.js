@@ -183,6 +183,46 @@ const sellerBuildingDocuments = [
         condition: (building) => { return building.type === 'coownershipLot' && building.immatriculated10Years }
     },
     {
+        name: "Contrôle d’assainissement valide",
+        description: "Durée de validité: 3 ans",
+        condition: (building) => {
+            return (building.type === 'house' || building.type === 'coownershipLot') &&
+            (building.sanitation === 'septicTank' || (building.sanitation === 'sewers' && building.sanitationControled))
+        }
+    },
+    {
+        name: "Contrat de location de la citerne de gaz",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.gazTankRented }
+    },
+    {
+        name: "Attestation d’entretien de la pompe à chaleur valide",
+        description: "Durée de validité: 1 an",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.heatPump }
+    },
+    {
+        name: "Attestation de ramonage pour la(les) cheminée(s) valide",
+        description: "Durée de validité: 1 an",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.firePlace && building.firePlaceCount > 0 }
+    },
+    {
+        name: "Attestation de ramonage pour la(les) cheminée(s) valide",
+        description: "Durée de validité: 1 an",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.stove && building.stoveCount > 0 }
+    },
+    {
+        name: "Déclaration en mairie du récupérateur d'eau",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.waterCollector }
+    },
+    {
+        name: "Tous renseignements utiles sur la nature des travaux effectués",
+        description: "Joindre les autorisations requises (déclaration préalable, permis de construire, DAACT, certificat de non-opposition) ainsi que la liste des entreprises étant intervenues et les factures associées",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.houseWorks }
+    },
+    {
+        name: "Tous renseignements utiles sur la nature du(des) sinistre(s)",
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.sinister }
+    },
+    {
         name: "Permis de construire",
         condition: (building) => { return building.type === 'house' && building.lessThanTenYears }
     },
@@ -214,7 +254,7 @@ const buyerBuildingDocuments = [];
 
 
 export function getDocuments(info) {
-    let result = {};
+    let result = { identities: [] };
     result.customer = customerDocuments.filter((document) => {
         return document.condition(info.customer)
     });
@@ -237,5 +277,6 @@ export function getDocuments(info) {
             return document.condition(info.building)
         });
     }
+    console.log(result);
     return result;
 }
