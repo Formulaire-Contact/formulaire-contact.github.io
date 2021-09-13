@@ -37,6 +37,16 @@
       </ul>
     </div>
 
+    <div v-if="documents.contractDay.length > 0">
+      <div class="text-h5 mt-5">Documents à fournir dans les meilleurs délais</div>
+      <ul>
+        <li v-for="(document) in documents.contractDay" :key="document.name" class="mt-1">
+          <span class="ml-2">{{ document.name }}</span><br/>
+          <span class="ml-2 text-caption font-weight-bold" v-if="document.description">{{ document.description }}</span>
+        </li>
+      </ul>
+    </div>
+
     <div class="d-flex justify-center">
       <v-btn color="primary" class="mt-8" v-on:click="exportPDF">Télécharger PDF</v-btn>
     </div>
@@ -44,9 +54,7 @@
     <div class="mt-6">
       <span>Questions:</span>
       <ul>
-        <li>Pour les lotissements, déclaration préalable même si soumis à permis d'aménager ?</li>
         <li>Taxe foncière pour les terrains non bâtis ?</li>
-        <li>Durée de l'emprunt en mois/années ?</li>
       </ul>
     </div>
   </div>

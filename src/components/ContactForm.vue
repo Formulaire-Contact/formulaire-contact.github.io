@@ -38,7 +38,8 @@
         </div>
       </v-fade-transition>
 
-
+      <div class="mb-4 mt-6">Merci d'indiquer toute information que vous jugez utile:</div>
+      <v-textarea id="comments" v-model="contact.comments" :rules="[]" outlined/>
     </div>
   </v-form>
 </template>
@@ -59,7 +60,8 @@ export default {
         appointment: {
           type: null,
           slots: []
-        }
+        },
+        comments: null
       },
       rules: {
         required: value => !!value || 'Ce champs est requis',

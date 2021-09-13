@@ -97,11 +97,11 @@ const sellerBuildingDocuments = [
     },
     {
         name: "Déclaration préalable",
-        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.priorStatement }
+        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.subdivisionType === 'priorStatement' }
     },
     {
         name: "Permis d'aménager",
-        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.arrangeLicence }
+        condition: (building) => { return building.type === 'constructibleLandInSubdivision' && building.subdivisionType === 'arrangeLicense' }
     },
     {
         name: "DAACT - Déclaration attestant l'achèvement et la conformité des travaux",
@@ -186,41 +186,49 @@ const sellerBuildingDocuments = [
         name: "Contrôle d’assainissement valide",
         description: "Durée de validité: 3 ans",
         condition: (building) => {
-            return (building.type === 'house' || building.type === 'coownershipLot') &&
-            (building.sanitation === 'septicTank' || (building.sanitation === 'sewers' && building.sanitationControled))
+            return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') &&
+            (building.sanitation === 'septicTank')
+        }
+    },
+    {
+        name: "Contrôle d’assainissement valide (optionnel)",
+        description: "Durée de validité: 3 ans",
+        condition: (building) => {
+            return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') &&
+                (building.sanitation === 'sewers' && building.sanitationControled)
         }
     },
     {
         name: "Contrat de location de la citerne de gaz",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.gazTankRented }
+        condition: (building) => { return (building.type === 'house' || building.type === 'commercialBuilding') && building.gazTankRented }
     },
     {
-        name: "Attestation d’entretien de la pompe à chaleur valide",
+        name: "Attestation d’entretien de la pompe à chaleur ou de la chaudière valide",
         description: "Durée de validité: 1 an",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.heatPump }
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') && building.heatPump }
     },
     {
-        name: "Attestation de ramonage pour la(les) cheminée(s) valide",
+        name: "Attestation de ramonage valide pour la(les) cheminée(s)",
         description: "Durée de validité: 1 an",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.firePlace && building.firePlaceCount > 0 }
+        condition: (building) => { return (building.type === 'house' || building.type === 'commercialBuilding') && building.firePlace && building.firePlaceCount > 0 }
     },
     {
-        name: "Attestation de ramonage pour la(les) cheminée(s) valide",
+        name: "Attestation de ramonage valide pour le(les) poêle(s)",
         description: "Durée de validité: 1 an",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.stove && building.stoveCount > 0 }
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') && building.stove && building.stoveCount > 0 }
     },
     {
         name: "Déclaration en mairie du récupérateur d'eau",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.waterCollector }
+        condition: (building) => { return (building.type === 'house' || building.type === 'commercialBuilding') && building.waterCollector }
     },
     {
         name: "Tous renseignements utiles sur la nature des travaux effectués",
         description: "Joindre les autorisations requises (déclaration préalable, permis de construire, DAACT, certificat de non-opposition) ainsi que la liste des entreprises étant intervenues et les factures associées",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.houseWorks }
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') && building.houseWorks }
     },
     {
         name: "Tous renseignements utiles sur la nature du(des) sinistre(s)",
-        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot') && building.sinister }
+        condition: (building) => { return (building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding') && building.sinister }
     },
     {
         name: "Permis de construire",
@@ -242,7 +250,7 @@ const sellerBuildingDocuments = [
     },
     {
         name: "Copie du bail",
-        condition: (building) => { return building.currentResidents === 'rented' }
+        condition: (building) => { return building.currentResidents === 'rented' || building.currentResidents === 'rentedFarming' }
     },
     {
         name: "Copie de l'état des lieux",
@@ -250,7 +258,38 @@ const sellerBuildingDocuments = [
     }
 ];
 
-const buyerBuildingDocuments = [];
+const buyerBuildingDocuments = [
+    {
+        name: "Coordonnées de votre banque et de votre conseiller",
+        description: "Les coordonnées de votre notaire sont également à fournir au conseiller clientèle de votre banque",
+        condition: () => { return true }
+    }
+];
+
+const sellerContractDay = [
+
+];
+
+const buyerContractDay = [
+    {
+        name: "Attestation(s) d'origine des fonds fournie par la(les) banque(s)",
+        condition: (info) => { return info.building.fundingType === 'ownMoney' || info.building.fundingType === 'loanAndOwnMoney' }
+    },
+    {
+        name: "Garantie du prêt",
+        description: "Si la garantie est un PPD et/ou une hypothèque, un acte notarié et des frais supplémentaires sont à prévoir",
+        condition: (info) => { return info.building.fundingType === 'loan' || info.building.fundingType === 'loanAndOwnMoney' }
+    },
+    {
+        name: "Copie de l'offre de prêt",
+        condition: (info) => { return info.building.fundingType === 'loan' || info.building.fundingType === 'loanAndOwnMoney' }
+    },
+    {
+        name: "Attestation d'assurance habitation",
+        description: "A fournir le jour de la signature de l'acte authentique de vente",
+        condition: () => { return true }
+    }
+];
 
 
 export function getDocuments(info) {
@@ -272,9 +311,15 @@ export function getDocuments(info) {
         result.building = buyerBuildingDocuments.filter((document) => {
             return document.condition(info.building)
         });
+        result.contractDay = buyerContractDay.filter((document) => {
+            return document.condition(info)
+        });
     } else if (info.customer.goal === 'sell') {
         result.building = sellerBuildingDocuments.filter((document) => {
             return document.condition(info.building)
+        });
+        result.contractDay = sellerContractDay.filter((document) => {
+            return document.condition(info)
         });
     }
     console.log(result);

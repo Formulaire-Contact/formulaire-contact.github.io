@@ -73,10 +73,19 @@
 
           <v-expand-transition>
             <div v-if="building.fundingType === 'loan' || building.fundingType === 'loanAndOwnMoney'">
-              <div class="mb-4">Informations sur l'emprunt</div>
-              <v-text-field v-model="building.fundingLoanAmount" :rules="[rules.required, rules.price]" label="Montant emprunté" type="number" suffix="€" required outlined/>
-              <v-text-field v-model="building.fundingLoanRate" :rules="[rules.required, rules.rate]" label="Taux de l'emprunt" type="number" suffix="%" required outlined/>
-              <v-text-field v-model="building.fundingLoanDuration" :rules="[rules.required, rules.duration]" label="Durée de l'emprunt" type="number" suffix="ans" required outlined/>
+
+              <div class="d-flex mb-4">
+                <div>Informations sur l'emprunt</div>
+                <v-tooltip top open-on-click max-width="300pt">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon class="pl-2" color="primary" dark v-bind="attrs" v-on="on">mdi-help-circle-outline</v-icon>
+                  </template>
+                  <span class="wrap">Informations fournies à titre indicatif, un accord définitif de la banque n'est pas nécessaire.<br>Pour bénéficier de la protection de l'emprunteur immobilier, les modalités d'emprunt contractées auprès de la banque doivent êtres inférieures ou égales aux informations fournies.</span>
+                </v-tooltip>
+              </div>
+              <v-text-field v-model="building.fundingLoanAmount" :rules="[rules.required, rules.price]" min="1" label="Montant maximum emprunté" type="number" suffix="€" required outlined/>
+              <v-text-field v-model="building.fundingLoanRate" :rules="[rules.required, rules.rate]" min="0" label="Taux maximum de l'emprunt" type="number" suffix="%" required outlined/>
+              <v-text-field v-model="building.fundingLoanDuration" :rules="[rules.required, rules.duration]" min="1" label="Durée maximale de l'emprunt" type="number" suffix="ans" required outlined/>
             </div>
           </v-expand-transition>
 
@@ -105,7 +114,11 @@
         </div>
       </v-expand-transition>
 
-
+      <div>Cette acquisition est-elle financée par la vente d’un autre bien ?</div>
+      <v-radio-group v-model="building.waterfall" row>
+        <v-radio label="Oui" :value="true"/>
+        <v-radio label="Non" :value="false"/>
+      </v-radio-group>
     </div>
 
 
@@ -124,7 +137,7 @@
       <v-expand-transition>
         <div v-if="building.type === 'constructibleLandInSubdivision'">
           <div class="d-flex">
-            <div>Le lotissement est-il soumis à la déclaration préalable ?</div>
+            <div>Le lotissement est soumis...</div>
             <v-tooltip top open-on-click max-width="300pt">
               <template v-slot:activator="{ on, attrs }">
                 <v-icon class="pl-2" color="primary" dark v-bind="attrs" v-on="on">mdi-help-circle-outline</v-icon>
@@ -132,15 +145,9 @@
               <span class="wrap">La déclaration préalable concerne uniquement les parcelles non situées en secteur de sauvegarde ou de site classé, ou non concernées par la création d’une voie, d’un espace ou d’équipements communs au lotissement.</span>
             </v-tooltip>
           </div>
-          <v-radio-group v-model="building.priorStatement" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
-          </v-radio-group>
-
-          <div>Le lotissement est-il soumis au permis d'aménager ?</div>
-          <v-radio-group v-model="building.arrangeLicence" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
+          <v-radio-group v-model="building.subdivisionType">
+            <v-radio label="A la déclaration préalable" value="priorStatement"/>
+            <v-radio label="Au permis d'aménager" value="arrangeLicense"/>
           </v-radio-group>
         </div>
       </v-expand-transition>
@@ -152,7 +159,7 @@
           <v-textarea id="description" v-model="building.description" :rules="[rules.required]" label="Description du bien" required outlined/>
           <v-text-field id="price" v-model="building.price" :rules="[rules.required, rules.price]" label="Prix de vente négocié avec l'acquéreur" type="number" suffix="€" required outlined/>
 
-          <div v-if="building.type === 'coownershipLot' || building.type === 'house'">
+          <div v-if="building.type === 'coownershipLot' || building.type === 'house' || building.type === 'commercialBuilding'">
             <div>Le bien est actuellement...</div>
             <v-radio-group v-model="building.currentResidents">
               <v-radio label="Occupé par moi" value="occupied"/>
@@ -161,7 +168,7 @@
             </v-radio-group>
 
             <v-expand-transition>
-              <div v-if="building.currentResidents === 'occupied'">
+              <div v-if="building.currentResidents === 'occupied' && building.type !== 'commercialBuilding'">
                 <div>Le bien est-il votre résidence principale ?</div>
                 <v-radio-group v-model="building.mainResidence" row>
                   <v-radio label="Oui" :value="true"/>
@@ -171,8 +178,24 @@
             </v-expand-transition>
           </div>
 
-          <div class="mb-4">Quel est votre centre d'imposition ?</div>
-          <v-text-field id="taxableResidence" v-model="building.taxableResidence" :rules="[rules.required]" label="Centre d'imposition" required outlined/>
+          <div v-if="building.type === 'land'">
+            <div>La parcelle est...</div>
+            <v-radio-group v-model="building.currentResidents">
+              <v-radio label="Louée pour une exploitation agricole" value="rentedFarming"/>
+              <v-radio label="Vide" value="empty"/>
+            </v-radio-group>
+          </div>
+
+          <div class="d-flex mb-4">
+            <div>Quelle est l'adresse de votre centre d'imposition ?</div>
+            <v-tooltip top open-on-click max-width="300pt">
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="pl-2" color="primary" dark v-bind="attrs" v-on="on">mdi-help-circle-outline</v-icon>
+              </template>
+              <span class="wrap">Cette adresse est indiquée sur les déclarations et avis d'impôt ou les avis de taxe foncière.</span>
+            </v-tooltip>
+          </div>
+          <v-text-field id="taxableResidence" v-model="building.taxableResidence" :rules="[rules.required]" label="Adresse du centre d'imposition" required outlined/>
 
           <div>Le montant du séquestre (dépôt de garantie) a-t-il été convenu avec {{ buyerSeller }} ?</div>
           <v-radio-group v-model="building.guaranteeAgreed" row>
@@ -287,7 +310,7 @@
       </v-expand-transition>
 
       <v-expand-transition>
-        <div class="mt-10" v-if="building.type === 'house' || building.type === 'coownershipLot'">
+        <div class="mt-10" v-if="building.type === 'house' || building.type === 'coownershipLot' || building.type === 'commercialBuilding'">
           <div class="mb-4 text-h5">Informations complémentaires</div>
           <div>Quel est le type d'assainissement du bien ?</div>
           <v-radio-group v-model="building.sanitation">
@@ -305,74 +328,78 @@
             </div>
           </v-expand-transition>
 
-          <div>Le bien possède-t-il une cuve de fioul ?</div>
-          <v-radio-group v-model="building.fuelTank" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
-          </v-radio-group>
+          <div v-if="building.type !== 'coownershipLot'">
+            <div>Le bien possède-t-il une cuve de fioul ?</div>
+            <v-radio-group v-model="building.fuelTank" row>
+              <v-radio label="Oui" :value="true"/>
+              <v-radio label="Non" :value="false"/>
+            </v-radio-group>
 
-          <v-expand-transition>
-            <div v-if="building.fuelTank">
-              <div>La cuve de fioul est en...</div>
-              <v-radio-group v-model="building.fuelTankMaterial">
-                <v-radio label="Métal" value="steel"/>
-                <v-radio label="PVC" value="plastic"/>
-              </v-radio-group>
+            <v-expand-transition>
+              <div v-if="building.fuelTank">
+                <div>La cuve de fioul est en...</div>
+                <v-radio-group v-model="building.fuelTankMaterial">
+                  <v-radio label="Métal" value="steel"/>
+                  <v-radio label="PVC" value="plastic"/>
+                </v-radio-group>
 
-              <div>La cuve de fioul est...</div>
-              <v-radio-group v-model="building.fuelTankType">
-                <v-radio label="Enterrée" value="buried"/>
-                <v-radio label="A l'extérieure du bien" value="outdoor"/>
-                <v-radio label="A l'intérieure du bien" value="indoor"/>
-              </v-radio-group>
+                <div>La cuve de fioul est...</div>
+                <v-radio-group v-model="building.fuelTankType">
+                  <v-radio label="Enterrée" value="buried"/>
+                  <v-radio label="A l'extérieure du bien" value="outdoor"/>
+                  <v-radio label="A l'intérieure du bien" value="indoor"/>
+                </v-radio-group>
 
-              <div>Proposez-vous à l'acheteur le rachat du fioul restant ?</div>
-              <v-radio-group v-model="building.fuelTankSellStock" row>
-                <v-radio label="Oui" :value="true"/>
-                <v-radio label="Non" :value="false"/>
-              </v-radio-group>
+                <div>Proposez-vous à l'acheteur le rachat du fioul restant ?</div>
+                <v-radio-group v-model="building.fuelTankSellStock" row>
+                  <v-radio label="Oui" :value="true"/>
+                  <v-radio label="Non" :value="false"/>
+                </v-radio-group>
 
-              <v-expand-transition>
-                <div v-if="building.fuelTankSellStock">
-                  <v-text-field id="fuelPrice" v-model="building.fuelTankSellStockAmount" :rules="[rules.required, rules.price]" label="Montant du rachat de fioul" type="number" suffix="€" required outlined/>
-                </div>
-              </v-expand-transition>
-            </div>
-          </v-expand-transition>
+                <v-expand-transition>
+                  <div v-if="building.fuelTankSellStock">
+                    <v-text-field id="fuelPrice" v-model="building.fuelTankSellStockAmount" :rules="[rules.required, rules.price]" label="Montant du rachat de fioul" type="number" suffix="€" required outlined/>
+                  </div>
+                </v-expand-transition>
+              </div>
+            </v-expand-transition>
 
-          <div>Le bien possède-t-il une citerne de gaz ?</div>
-          <v-radio-group v-model="building.gazTank" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
-          </v-radio-group>
+            <div>Le bien possède-t-il une citerne de gaz ?</div>
+            <v-radio-group v-model="building.gazTank" row>
+              <v-radio label="Oui" :value="true"/>
+              <v-radio label="Non" :value="false"/>
+            </v-radio-group>
 
-          <v-expand-transition>
-            <div v-if="building.gazTank">
-              <div>Avez-vous un contrat de location pour la citerne de gaz ?</div>
-              <v-radio-group v-model="building.gazTankRented" row>
-                <v-radio label="Oui" :value="true"/>
-                <v-radio label="Non" :value="false"/>
-              </v-radio-group>
-            </div>
-          </v-expand-transition>
+            <v-expand-transition>
+              <div v-if="building.gazTank">
+                <div>Avez-vous un contrat de location pour la citerne de gaz ?</div>
+                <v-radio-group v-model="building.gazTankRented" row>
+                  <v-radio label="Oui" :value="true"/>
+                  <v-radio label="Non" :value="false"/>
+                </v-radio-group>
+              </div>
+            </v-expand-transition>
+          </div>
 
-          <div>Le bien possède-t-il une pompe à chaleur ?</div>
+          <div>Le bien possède-t-il une pompe à chaleur ou une chaudière ?</div>
           <v-radio-group v-model="building.heatPump" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
 
-          <div>Le bien possède-t-il une ou plusieurs cheminée(s) ?</div>
-          <v-radio-group v-model="building.firePlace" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
-          </v-radio-group>
+          <div v-if="building.type !== 'coownershipLot'">
+            <div>Le bien possède-t-il une ou plusieurs cheminée(s) ?</div>
+            <v-radio-group v-model="building.firePlace" row>
+              <v-radio label="Oui" :value="true"/>
+              <v-radio label="Non" :value="false"/>
+            </v-radio-group>
 
-          <v-expand-transition>
-            <div v-if="building.firePlace">
-              <v-text-field id="firePlaceCount" v-model="building.firePlaceCount" :rules="[rules.required, rules.count]" label="Nombre de cheminée(s)" type="number" min="1" pattern="\d+" required outlined/>
-            </div>
-          </v-expand-transition>
+            <v-expand-transition>
+              <div v-if="building.firePlace">
+                <v-text-field id="firePlaceCount" v-model="building.firePlaceCount" :rules="[rules.required, rules.count]" label="Nombre de cheminée(s)" type="number" min="1" pattern="\d+" required outlined/>
+              </div>
+            </v-expand-transition>
+          </div>
 
           <div>Le bien possède-t-il un ou plusieurs poêle(s) ?</div>
           <v-radio-group v-model="building.stove" row>
@@ -386,11 +413,13 @@
             </div>
           </v-expand-transition>
 
-          <div>Le bien possède-t-il un récupérateur d'eau (dont puits et forages) ?</div>
-          <v-radio-group v-model="building.waterCollector" row>
-            <v-radio label="Oui" :value="true"/>
-            <v-radio label="Non" :value="false"/>
-          </v-radio-group>
+          <div v-if="building.type !== 'coownershipLot'">
+            <div>Le bien possède-t-il un récupérateur d'eau (dont puits et forages) ?</div>
+            <v-radio-group v-model="building.waterCollector" row>
+              <v-radio label="Oui" :value="true"/>
+              <v-radio label="Non" :value="false"/>
+            </v-radio-group>
+          </div>
 
           <div>Le bien est-il équipé de détecteur(s) de fumée ?</div>
           <v-radio-group v-model="building.smokeDetectors" row>
@@ -398,7 +427,7 @@
             <v-radio label="Non" :value="false"/>
           </v-radio-group>
 
-          <div>Le bien est-il équipé de WC de type broyeur ?</div>
+          <div>Le bien est-il équipé d'un WC de type broyeur ?</div>
           <v-radio-group v-model="building.crusherToilets" row>
             <v-radio label="Oui" :value="true"/>
             <v-radio label="Non" :value="false"/>
@@ -487,8 +516,7 @@ export default {
         loan: null,
         mainResidence: null,
         taxableResidence: null,
-        priorStatement: null,
-        arrangeLicence: null,
+        subdivisionType: null,
         before1949: null,
         before1997: null,
         immatriculated10Years: null,
